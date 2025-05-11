@@ -1,0 +1,312 @@
+openapi: 3.0.0
+info:
+  title: School Vaccination Portal API
+  version: 1.0.0
+  description: API for managing students, vaccination drives, and registrations in a school vaccination system.
+
+servers:
+  - url: http://localhost:5000/api
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Students
+    description: Student management endpoints
+  - name: Vaccination
+    description: Vaccination management endpoints
+  - name: Drives
+    description: Vaccination drives management endpoints
+  - name: Dashboard
+    description: Dashboard metrics and insights
+
+paths:
+  /user/login:
+    post:
+      tags: [Auth]
+      summary: Simulated login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+
+  /user/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+      responses:
+        '201':
+          description: User created
+
+  /students/register:
+    post:
+      tags: [Students]
+      summary: Register a new student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                studentClass:
+                  type: string
+                studentId:
+                  type: string
+                age:
+                  type: number
+                gender:
+                  type: string
+                vaccinationStatus:
+                  type: string
+                  enum: ["vaccinated", "notVaccinated"]
+      responses:
+        '201':
+          description: Student created
+
+  /students:
+    get:
+      tags: [Students]
+      summary: Get all students
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: studentClass
+          schema:
+            type: string
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: vaccinationStatus
+          schema:
+            type: string
+            enum: ["vaccinated", "notVaccinated"]
+      responses:
+        '200':
+          description: List of students
+  /students/{id}:
+    get:
+      tags: [Students]
+      summary: Get a student by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Student data
+        '404':
+          description: Not found
+
+    put:
+      tags: [Students]
+      summary: Update student by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                studentClass:
+                  type: string
+                studentId:
+                  type: string
+                age: 
+                  type: string
+                gender:
+                  type: string
+                vaccinationStatus:
+                  type: string
+                  enum: ["vaccinated", "notVaccinated"]
+      responses:
+        '200':
+          description: Student updated
+
+  /students/import:
+    post:
+      tags: [Students]
+      summary: Import students in bulk via CSV
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Students imported
+
+  /vaccination:
+    get:
+      tags: [Vaccination]
+      summary: Get list of drives with optional filters
+      parameters:
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: toDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: applicableClass
+          schema:
+            type: integer
+        - in: query
+          name: vaccineName
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of drives
+
+    post:
+      tags: [Vaccination]
+      summary: Create a new vaccination drive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                vaccineName:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                availableDoses:
+                  type: integer
+                classes:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Drive created
+
+  /vaccination/{id}:
+    put:
+      tags: [Vaccination]
+      summary: Update a vaccination drive
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                vaccineName:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                availableDoses:
+                  type: integer
+                classes:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Drive updated
+
+  /drives:
+    post:
+      tags: [Drives]
+      summary: Register student to a vaccination drive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentId:
+                  type: integer
+                driveId:
+                  type: integer
+      responses:
+        '201':
+          description: Registration successful
+
+  /drives/{driveId}:
+    get:
+      tags: [Drives]
+      summary: List students registered for a given drive
+      parameters:
+        - in: path
+          name: driveId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of registered students
+
+  /dashboard/overview:
+    get:
+      tags: [Dashboard]
+      summary: Get dashboard metrics and upcoming drives
+      responses:
+        '200':
+          description: Dashboard data
