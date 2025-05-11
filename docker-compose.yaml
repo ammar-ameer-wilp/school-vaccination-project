@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    container_name: school-vaccination-project-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vaccine_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: school-vaccination-project-backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vaccine_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "psql postgresql://postgres:postgres@db:5432/vaccine_db -f ./src/db/migrations/init.sql && npm run dev"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+
+volumes:
+  db_data:
+
