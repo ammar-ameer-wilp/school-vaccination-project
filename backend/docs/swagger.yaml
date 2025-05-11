@@ -288,6 +288,37 @@ paths:
       responses:
         '201':
           description: Registration successful
+          
+  /drives/report:
+    get:
+      tags:
+        - Drives
+      summary: Get student vaccination report
+      description: Returns a paginated list of student vaccination records, filtered optionally by vaccine name.
+      parameters:
+        - name: vaccineName
+          in: query
+          description: Filter by vaccine name (e.g., BCG, Polio)
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Offset for pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response with vaccination report
 
   /drives/{driveId}:
     get:
