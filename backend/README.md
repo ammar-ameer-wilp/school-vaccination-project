@@ -17,15 +17,31 @@ This is the backend API for the **School Vaccination Portal** project. It manage
 ## Run with Docker
 
 Run this command from the root directory.
-```bash
-docker-compose up --build
 ```
+docker compose up --build
+```
+---
 
-# Run migration script inside container (or locally)
-```bash 
+## Run migration script 
+
+If running the project in local and need to setup the db, run the below command:
+``` 
 node src/db/runMigrations.js
 ```
+---
 
-# API Endpoints
+## Environment Variables
+
+Add the following environment variables to the .env file:
+```
+PORT=5000
+DATABASE_URL=postgresql://<user>:<password>@db:5432/vaccine_db
+```
+
+Note: Replace the `user` and `password` with your actual postgres username and password.
+
+---
+
+## API Endpoints
 
 Endpoints are added in **docs/swagger.yaml** file.
