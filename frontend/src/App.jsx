@@ -7,6 +7,7 @@ import Students from './pages/students';
 import Drives from './pages/drives';
 import StudentVaccination from './pages/studentVaccination';
 import './App.css';
+import Report from './pages/report';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/students" element={<Students />} />
         <Route path="/drives" element={<Drives />} />
         <Route path="/vaccinations" element={<StudentVaccination />} />
+        <Route path="/report" element={<Report />} />
       </Routes>
     </BrowserRouter>
   );
