@@ -112,4 +112,61 @@ const getStudentsForDrive = async (req, res) => {
   }
 };
 
-module.exports = { registerStudentForDrive, getStudentsForDrive };
+const getVaccinationReport = async (req, res) => {
+  try {
+    const { vaccineName, offset = 0, limit = 10 } = req.query;
+
+    const filters = [];
+    const values = [];
+
+    if (vaccineName) {
+      values.push(vaccineName);
+      filters.push(`vd.vaccine_name = $${values.length}`);
+    }
+
+    const whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+
+    const dataQuery = `
+      SELECT s.id as student_id, s.name, s.class, vd.vaccine_name, vd.date_of_drive
+      FROM student_vaccination_drives sv
+      JOIN students s ON sv.student_id = s.id
+      JOIN vaccination_drives vd ON sv.drive_id = vd.id
+      ${whereClause}
+      ORDER BY vd.date_of_drive DESC
+      LIMIT $${values.length + 1} OFFSET $${values.length + 2}
+    `;
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM student_vaccination_drives sv
+      JOIN students s ON sv.student_id = s.id
+      JOIN vaccination_drives vd ON sv.drive_id = vd.id
+      ${whereClause}
+    `;
+
+    const data = await pool.query(dataQuery, [...values, limit, offset]);
+    const count = await pool.query(countQuery, values);
+
+    res.json({
+      status:"ok",
+      data: data.rows.map((r) => ({
+        student_id: r.student_id,
+        name: r.name,
+        class: r.class,
+        vaccineName: r.vaccine_name,
+        status: 'Vaccinated',
+        date: r.date_of_drive,
+      })),
+      pagination: {
+        total: parseInt(count.rows[0].total),
+        offset: parseInt(offset),
+        limit: parseInt(limit),
+      },
+    });
+  } catch (err) {
+    console.error('Report error:', err);
+    res.status(500).json({status:"nok", message: 'Error generating report' });
+  }
+};
+
+module.exports = { registerStudentForDrive, getStudentsForDrive, getVaccinationReport };
