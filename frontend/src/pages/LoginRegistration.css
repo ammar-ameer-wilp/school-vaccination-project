@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+.text {
+  font-weight: 900;
+  padding: 10px;
+  color: #443030;
+  font-size: 4rem;
+}
+
+.error {
+  color: rgb(68, 17, 17);
+  font-size: small;
+}

@@ -1,0 +1,21 @@
+.custom-btn {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.7rem 0;
+}
+
+.custom-btn:hover {
+  background-color: #2563eb;
+}
+
+.custom-btn:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
